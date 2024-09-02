@@ -1,27 +1,19 @@
 from tkinter import *
 import Digit_recognition_backend
 import numpy
+import globals
 
-inputSize = 28
-pixelSize = 20
-buttonH = 5
-buttonW = 10
-canvasWidth = canvasHeight = pixelSize*inputSize
-black = "#000000"
-white = "#ffffff"
 
-colour_change_speed = 48 
-brushSize = 2.5
-sign = 1
+
 
 cm = []
 tl = []
 results = [0,0,0,0,0,0,0,0,0,0]
 
-for i in range(inputSize):
+for i in range(globals.inputSize):
     cm.append([])
     tl.append([])
-    for j in range(inputSize):
+    for j in range(globals.inputSize):
         cm[i].append(0)
         tl[i].append("")
     #r1-3list will be used to draw predictions; r1 for bars to make a plot, r2 class labels, r3 for percentages
@@ -36,21 +28,21 @@ for i in range(len(results)):
 def brushMode():
     global sign
     sign = 1
-    eraserbutton.configure(bg = black, fg = white)
-    brushbutton.configure(bg = white, fg = black)
+    eraserbutton.configure(bg = globals.black, fg = globals.white)
+    brushbutton.configure(bg = globals.white, fg = globals.black)
 
 def eraserMode():
     global sign
     sign = -1
-    brushbutton.configure(bg = black, fg = white)
-    eraserbutton.configure(bg = white, fg = black)
+    brushbutton.configure(bg = globals.black, fg = globals.white)
+    eraserbutton.configure(bg = globals.white, fg = globals.black)
 
 def reset():
     for i in range(len(cm)):
         for j in range(len(cm[i])):
             cm[i][j] = 0
     drawAll()
-            
+
 def random():
     global cm
     cm = Digit_recognition_backend.give_random()
@@ -84,27 +76,27 @@ def drawtile(x,y):
     can.delete(tl[x][y])
     blue = int((cm[x][y]))
     colour = "#0000"
-    if blue <16: 
+    if blue <16:
         colour  += ("0" +str(hex(blue)[-1:]))
     else:
         colour += str(hex(blue)[-2:])
-    tl[x][y] = can.create_rectangle(x*pixelSize,y*pixelSize,(x+1)*pixelSize,(y+1)*pixelSize, fill = colour)
+    tl[x][y] = can.create_rectangle(x*globals.pixelSize,y*globals.pixelSize,(x+1)*globals.pixelSize,(y+1)*globals.pixelSize, fill = colour)
 
 def check_and_change(x,y,dmod):
-    if 0<=x and x<inputSize and 0<=y and y<inputSize:
-        changed = cm[x][y]+colour_change_speed*sign*dmod
+    if 0<=x and x<globals.inputSize and 0<=y and y<globals.inputSize:
+        changed = cm[x][y]+globals.colour_change_speed*sign*dmod
         if changed>=0 and changed<256:
-            cm[x][y] = changed 
+            cm[x][y] = changed
             drawtile(x,y)
 
 def indraw(event):
-    x = int(event.x/pixelSize)
-    y = int(event.y/pixelSize)
-    for i in range(inputSize):
-        for j in range(inputSize):
+    x = int(event.x/globals.pixelSize)
+    y = int(event.y/globals.pixelSize)
+    for i in range(globals.inputSize):
+        for j in range(globals.inputSize):
             dist = abs(i-x)**2+abs(j-y)**2
-            if dist<brushSize:
-                check_and_change(i,j,(brushSize-dist)/brushSize)
+            if dist<globals.brushSize:
+                check_and_change(i,j,(globals.brushSize-dist)/globals.brushSize)
 
 def drawAll():
     for i in range(len(cm)):
@@ -112,8 +104,8 @@ def drawAll():
             drawtile(i,j)
 
 def drawResults():
-    rowW = canvasWidth//4
-    rowH = canvasHeight//((len(results)*2)+5)
+    rowW = globals.canvasWidth//4
+    rowH = globals.canvasHeight//((len(results)*2)+5)
 
     j = 0
     for i in range(len(results)*2+2):
@@ -122,34 +114,34 @@ def drawResults():
             rescan.delete(r2list[j])
             rescan.delete(r3list[j])
             r1list[j] = rescan.create_rectangle(rowW//2,i*rowH,rowW//2 + (rowW*results[j])//1,(i+1)*rowH,fill = "#2727ff")
-            r2list[j] = rescan.create_text(rowW//2-10,((i+1/2)*rowH)//1, text = str(j), anchor = "e", fill = white)
-            r3list[j] = rescan.create_text(rowW//2+10,((i+1/2)*rowH)//1, text = str(int(results[j]*100))+"%", anchor = "w", fill = white)
+            r2list[j] = rescan.create_text(rowW//2-10,((i+1/2)*rowH)//1, text = str(j), anchor = "e", fill = globals.white)
+            r3list[j] = rescan.create_text(rowW//2+10,((i+1/2)*rowH)//1, text = str(int(results[j]*100))+"%", anchor = "w", fill = globals.white)
             j+=1
 
 
 main_window = Tk()
 main_window.title("Digit recognition")
-main_window.configure(bg = black)
+main_window.configure(bg = globals.black)
 
-can = Canvas(main_window,width=canvasWidth,height=canvasHeight)
+can = Canvas(main_window,width=globals.canvasWidth,height=globals.canvasHeight)
 can.grid(row = 0, column = 0,rowspan = 5)
 
-eraserbutton = Button(main_window, width = buttonW, height = buttonH, text = "Eraser",command = eraserMode, bg = black, fg = white, borderwidth = 10)
+eraserbutton = Button(main_window, width = globals.buttonW, height = globals.buttonH, text = "Eraser",command = eraserMode, bg = globals.black, fg = globals.white, borderwidth = 10)
 eraserbutton.grid(row = 0, column = 1, sticky = 'n')
 
-brushbutton = Button(main_window, width = buttonW, height = buttonH, text = "Brush", command = brushMode, bg = white, fg = black, borderwidth = 10)
+brushbutton = Button(main_window, width = globals.buttonW, height = globals.buttonH, text = "Brush", command = brushMode, bg = globals.white, fg = globals.black, borderwidth = 10)
 brushbutton.grid(row = 1, column = 1)
 
-resetbutton = Button(main_window, width = buttonW, height = buttonH, text = "Reset", command = reset, bg = black, fg = white, borderwidth = 10)
+resetbutton = Button(main_window, width = globals.buttonW, height = globals.buttonH, text = "Reset", command = reset, bg = globals.black, fg = globals.white, borderwidth = 10)
 resetbutton.grid(row = 2, column = 1)
 
-randombutton = Button(main_window, width = buttonW, height = buttonH, text = "Random \n digit", command = random, bg = black, fg = white, borderwidth = 10)
+randombutton = Button(main_window, width = globals.buttonW, height = globals.buttonH, text = "Random \n digit", command = random, bg = globals.black, fg = globals.white, borderwidth = 10)
 randombutton.grid(row = 3, column = 1)
 
-updatebutton = Button(main_window, width = buttonW, height = buttonH, text = "Update \n predictions", command = update_predictions, bg = black, fg = white, borderwidth = 10)
+updatebutton = Button(main_window, width = globals.buttonW, height = globals.buttonH, text = "Update \n predictions", command = update_predictions, bg = globals.black, fg = globals.white, borderwidth = 10)
 updatebutton.grid(row = 4, column = 1, sticky = 's')
 
-rescan = Canvas(main_window,width=canvasWidth//2,height=canvasHeight,bg = black)
+rescan = Canvas(main_window,width=globals.canvasWidth//2,height=globals.canvasHeight,bg = globals.black)
 rescan.grid(row = 0, column = 2,rowspan = len(results)+1)
 
 
