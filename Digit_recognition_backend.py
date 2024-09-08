@@ -4,7 +4,6 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 import numpy
-from keras.utils import to_categorical
 import random
 import globals
 
@@ -14,7 +13,7 @@ import globals
 # https://data-flair.training/blogs/python-deep-learning-project-handwritten-digit-recognition/
 
 
-def get_cleaned_data():
+def get_formated_data():
     (input_train, labels_train), (input_test, labels_test) = mnist.load_data()
     input_train = input_train.reshape(input_train.shape[0], 28, 28, 1)
     input_test = input_test.reshape(input_test.shape[0], 28, 28, 1)
@@ -56,40 +55,33 @@ def create_model():
 
 
 def train_model(model, input_train, labels_train):
-    print(input_train.shape)
     hist = model.fit(
-        input_train, labels_train, batch_size=64, epochs=100, verbose=1
-    )  # , validation_data = (input_test,labels_test))
+        input_train,
+        labels_train,
+        batch_size=64,
+        epochs=100,
+        verbose=1,
+        # validation_data=(input_test, labels_test),
+    )
     model.save("mnist3.h5")
+    return hist
 
 
 def get_random_digit(input_test):
-    """ "
+    """
     Returns a random digit from the test set
     """
 
     r = random.randrange(globals.input_shape[0])
-    result = []
-    for i in range(globals.input_shape[1]):
-        result.append([])
-        for j in range(globals.input_shape[2]):
-            result[i].append(input_test[r][j][i][0] * 255)
-    return result
+    digit = input_test[r]
+    return digit.T[0] * 255
 
 
 model = keras.models.load_model("mnist2.h5")
 
 
 def predict_digit(inputs):
-    array = [[]]
-    # print("inputs", inputs)
-    for j in range(28):
-        array[0].append([])
-        for k in range(28):
-            array[0][j].append(float(inputs[k][j]) / 255)
-    array = numpy.array(array)
-    # print("array",array)
-    results = model.predict(array)
+    results = model.predict(inputs.reshape(globals.input_shape).T)
     return results[0]
 
 
