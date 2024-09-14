@@ -6,15 +6,16 @@ import numpy as np
 
 
 # backend
-model = keras.models.load_model("models\mnist2.h5")
-
+try:
+    model = keras.models.load_model("models\model_1\model_1.keras")
+except:
+    print("Model not found")
 
 # https://data-flair.training/blogs/python-deep-learning-project-handwritten-digit-recognition/
 
 
 def get_formated_data():
     (input_train, labels_train), (input_test, labels_test) = mnist.load_data()
-    print(input_train.shape)
     input_train = input_train.reshape(input_train.shape[0], 28, 28, 1)
     input_test = input_test.reshape(input_test.shape[0], 28, 28, 1)
 

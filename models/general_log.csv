@@ -1,0 +1,2 @@
+model_name,start_time,end_time,batch_size,epochs,seed,details
+test_model,2024-09-14 15:17:27.499043,2024-09-14 15:22:16.925585,64,100,0,
